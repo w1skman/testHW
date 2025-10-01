@@ -1,8 +1,9 @@
 import os
 import asyncio
 import logging
-import threading
+from waitress import serve
 from flask import Flask
+from telegram_bot import HotWheelsMonitor
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,8 +21,6 @@ def health():
 async def run_bot_async():
     """Асинхронный запуск Telegram бота"""
     try:
-        from telegram_bot import HotWheelsMonitor
-        
         token = os.getenv('TELEGRAM_BOT_TOKEN')
         if not token:
             logger.error("❌ TELEGRAM_BOT_TOKEN not found")
@@ -50,5 +49,5 @@ run_bot()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    logger.info(f"🚀 Запуск Flask на порту {port}")
-    app.run(host='0.0.0.0', port=port)
+    logger.info(f"🚀 Запуск production сервера на порту {port}")
+    serve(app, host='0.0.0.0', port=port)
